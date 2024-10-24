@@ -1,35 +1,8 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors'); 
+const router = express.Router();
+const UserModel = require('../models/userModel');
 
-const app = express();
-app.use(express.json());
-app.use(cors()); 
-
-require('dotenv').config();
-
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log("Connected to MongoDB");
-}).catch((err) => {
-    console.error("Failed to connect to MongoDB", err);
-});
-
-
-const UserSchema = mongoose.Schema({
-    name: String,
-    experience: Number,
-    address: String,
-    role: String,
-    dateOfJoining: String,
-    id: String
-});
-
-const UserModel = mongoose.model("users", UserSchema);
-
-app.get("/getUsers", async (req, res) => {
+router.get("/getUsers", async (req, res) => {
     try {
         const users = await UserModel.find({});
         res.json(users);
@@ -39,7 +12,7 @@ app.get("/getUsers", async (req, res) => {
     }
 });
 
-app.post("/addUser", async (req, res) => {
+router.post("/addUser", async (req, res) => {
     try {
         const { name, experience, address, role, dateOfJoining, id } = req.body;
         const newUser = new UserModel({ name, experience, address, role, dateOfJoining, id });
@@ -51,11 +24,10 @@ app.post("/addUser", async (req, res) => {
     }
 });
 
-app.put("/editUser/:id", async (req, res) => {
+router.put("/editUser/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const { name, experience, address, role, dateOfJoining } = req.body;
-
         const updatedUser = await UserModel.findByIdAndUpdate(id, { name, experience, address, role, dateOfJoining }, { new: true });
         if (!updatedUser) {
             return res.status(404).json({ message: "User not found" });
@@ -67,7 +39,7 @@ app.put("/editUser/:id", async (req, res) => {
     }
 });
 
-app.delete("/deleteUser/:id", async (req, res) => {
+router.delete("/deleteUser/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const deletedUser = await UserModel.findByIdAndDelete(id);
@@ -81,6 +53,4 @@ app.delete("/deleteUser/:id", async (req, res) => {
     }
 });
 
-app.listen(3001, () => {
-    console.log("Server is running on port 3001");
-});
+module.exports = router;

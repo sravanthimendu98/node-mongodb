@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import UserService from '../../services/UserService';
-import { useStyles } from '../styles/styles';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import React, { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import UserService from "../../services/UserService";
+import { useStyles } from "../styles/styles";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import Navbar from "../navbar/Navbar";
 
 type User = {
   _id: number;
@@ -39,19 +47,19 @@ const UserComponent = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      experience: '',
-      role: '',
-      dateOfJoining: '',
-      address: '',
+      name: "",
+      experience: "",
+      role: "",
+      dateOfJoining: "",
+      address: "",
     },
-    
+
     validationSchema: Yup.object({
-      name: Yup.string().required('Name is required'),
-      experience: Yup.number().required('Experience is required'),
-      role: Yup.string().required('Role is required'),
-      dateOfJoining: Yup.string().required('Date of Joining is required'),
-      address: Yup.string().required('Address is required'),
+      name: Yup.string().required("Name is required"),
+      experience: Yup.number().required("Experience is required"),
+      role: Yup.string().required("Role is required"),
+      dateOfJoining: Yup.string().required("Date of Joining is required"),
+      address: Yup.string().required("Address is required"),
     }),
 
     onSubmit: (values) => {
@@ -101,19 +109,32 @@ const UserComponent = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Name', width: 200 },
-    { field: 'experience', headerName: 'Experience', width: 110 },
-    { field: 'role', headerName: 'Role', width: 150 },
-    { field: 'dateOfJoining', headerName: 'Date of Joining', width: 150 },
-    { field: 'address', headerName: 'Address', width: 200 },
+    { field: "name", headerName: "Name", width: 200 },
+    { field: "experience", headerName: "Experience", width: 110 },
+    { field: "role", headerName: "Role", width: 150 },
+    { field: "dateOfJoining", headerName: "Date of Joining", width: 150 },
+    { field: "address", headerName: "Address", width: 200 },
     {
-      field: 'actions',
-      headerName: 'Actions',
+      field: "actions",
+      headerName: "Actions",
       width: 200,
       renderCell: (params) => (
         <>
-          <Button onClick={() => handleEdit(params.row)} variant="contained" color="primary" style={{ marginRight: 8 }}>Edit</Button>
-          <Button onClick={() => handleDelete(params.row._id)} variant="contained" color="secondary">Delete</Button>
+          <Button
+            onClick={() => handleEdit(params.row)}
+            variant="contained"
+            color="primary"
+            style={{ marginRight: 8 }}
+          >
+            Edit
+          </Button>
+          <Button
+            onClick={() => handleDelete(params.row._id)}
+            variant="contained"
+            color="secondary"
+          >
+            Delete
+          </Button>
         </>
       ),
     },
@@ -121,11 +142,27 @@ const UserComponent = () => {
 
   return (
     <>
-      <Box sx={{ height: 400, width: '85%', margin: "auto", marginTop: '5%' }}>
-        <Button sx={{ marginBottom: "2%" }} variant="contained" onClick={handleOpen}>Add</Button>
+      <Navbar />
+      <Box>
+        <Button
+          sx={{
+            marginBottom: "2%",
+            marginTop: "5%",
+          }}
+          variant="contained"
+          onClick={handleOpen}
+        >
+          Add
+        </Button>
+      </Box>
+      <Box sx={{ height: 400, width: "85%", margin: "auto" }}>
         <Box>
           <DataGrid
-            sx={{ ".MuiDataGrid-row--borderBottom": { backgroundColor: '#b4caf3 !important' } }}
+            sx={{
+              ".MuiDataGrid-row--borderBottom": {
+                backgroundColor: "#b4caf3 !important",
+              },
+            }}
             getRowId={(row) => row._id}
             rows={users}
             columns={columns}
@@ -163,7 +200,9 @@ const UserComponent = () => {
               onBlur={formik.handleBlur}
               fullWidth
               margin="normal"
-              error={formik.touched.experience && Boolean(formik.errors.experience)}
+              error={
+                formik.touched.experience && Boolean(formik.errors.experience)
+              }
               helperText={formik.touched.experience && formik.errors.experience}
             />
             <TextField
@@ -187,8 +226,13 @@ const UserComponent = () => {
               onBlur={formik.handleBlur}
               fullWidth
               margin="normal"
-              error={formik.touched.dateOfJoining && Boolean(formik.errors.dateOfJoining)}
-              helperText={formik.touched.dateOfJoining && formik.errors.dateOfJoining}
+              error={
+                formik.touched.dateOfJoining &&
+                Boolean(formik.errors.dateOfJoining)
+              }
+              helperText={
+                formik.touched.dateOfJoining && formik.errors.dateOfJoining
+              }
             />
             <TextField
               className={classes.fieldErr}
@@ -205,7 +249,11 @@ const UserComponent = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={!formik.isValid || formik.isSubmitting}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={!formik.isValid || !formik.dirty || formik.isSubmitting}
+            >
               {editMode ? "Update" : "Add"}
             </Button>
           </DialogActions>
