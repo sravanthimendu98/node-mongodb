@@ -14,9 +14,12 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Navbar from "../navbar/Navbar";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 type User = {
   _id: number;
@@ -61,12 +64,15 @@ const UserComponent = () => {
       name: Yup.string().required("Name is required"),
       experience: Yup.number().required("Experience is required"),
       role: Yup.string().required("Role is required"),
-      dateOfJoining: Yup.string().required("Date of Joining is required"),
+      dateOfJoining: Yup.date().required("Date of Joining is required"),
       address: Yup.string().required("Address is required"),
     }),
 
     onSubmit: (values) => {
+      console.log(values, "values");
+
       if (editMode && selectedUser) {
+        console.log(selectedUser._id, "selectedUser._id, ");
         UserService.editUser(selectedUser._id, values)
           .then(() => {
             fetchUsers();
@@ -109,6 +115,17 @@ const UserComponent = () => {
       .catch((error) => {
         console.error("Failed to delete user");
       });
+  };
+
+  const isFormChanged = () => {
+    if (!selectedUser) return true;
+    return (
+      formik.values.name !== selectedUser.name ||
+      formik.values.experience !== selectedUser.experience ||
+      formik.values.role !== selectedUser.role ||
+      formik.values.dateOfJoining !== selectedUser.dateOfJoining ||
+      formik.values.address !== selectedUser.address
+    );
   };
 
   const columns: GridColDef[] = [
@@ -223,6 +240,7 @@ const UserComponent = () => {
               className={classes.fieldErr}
               label="Experience"
               name="experience"
+              type="number"
               value={formik.values.experience}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -245,23 +263,43 @@ const UserComponent = () => {
               error={formik.touched.role && Boolean(formik.errors.role)}
               helperText={formik.touched.role && formik.errors.role}
             />
-            <TextField
-              className={classes.fieldErr}
-              label="Date of Joining"
-              name="dateOfJoining"
-              value={formik.values.dateOfJoining}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              fullWidth
-              margin="normal"
-              error={
-                formik.touched.dateOfJoining &&
-                Boolean(formik.errors.dateOfJoining)
-              }
-              helperText={
-                formik.touched.dateOfJoining && formik.errors.dateOfJoining
-              }
-            />
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                className={classes.fieldErr}
+                label="Date of Joining"
+                value={
+                  formik.values.dateOfJoining
+                    ? new Date(formik.values.dateOfJoining)
+                    : null
+                }
+                onChange={(value) => {
+                  if (value instanceof Date && !isNaN(value.getTime())) {
+                    formik.setFieldValue(
+                      "dateOfJoining",
+                      value.toISOString().split("T")[0]
+                    );
+                  } else {
+                    formik.setFieldValue("dateOfJoining", "");
+                  }
+                }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    margin: "normal",
+                    error: Boolean(
+                      formik.touched.dateOfJoining &&
+                        formik.errors.dateOfJoining
+                    ),
+                    helperText:
+                      formik.touched.dateOfJoining &&
+                      formik.errors.dateOfJoining
+                        ? formik.errors.dateOfJoining
+                        : "",
+                    onBlur: () => formik.setFieldTouched("dateOfJoining", true),
+                  },
+                }}
+              />
+            </LocalizationProvider>
             <TextField
               className={classes.fieldErr}
               label="Address"
@@ -280,7 +318,12 @@ const UserComponent = () => {
             <Button
               type="submit"
               variant="contained"
-              disabled={!formik.isValid || !formik.dirty || formik.isSubmitting}
+              disabled={
+                !formik.isValid ||
+                !formik.dirty ||
+                formik.isSubmitting ||
+                (editMode && !isFormChanged())
+              }
             >
               {editMode ? "Update" : "Add"}
             </Button>
