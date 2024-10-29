@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import UserService from "../../services/UserService";
 import { useStyles } from "../styles/styles";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Dialog,
@@ -10,6 +11,8 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Typography,
+  IconButton,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -109,11 +112,11 @@ const UserComponent = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Name", width: 200 },
-    { field: "experience", headerName: "Experience", width: 110 },
-    { field: "role", headerName: "Role", width: 150 },
-    { field: "dateOfJoining", headerName: "Date of Joining", width: 150 },
-    { field: "address", headerName: "Address", width: 200 },
+    { field: "name", headerName: "Name", width: 250 },
+    { field: "experience", headerName: "Experience", width: 150 },
+    { field: "role", headerName: "Role", width: 200 },
+    { field: "dateOfJoining", headerName: "Date of Joining", width: 200 },
+    { field: "address", headerName: "Address", width: 230 },
     {
       field: "actions",
       headerName: "Actions",
@@ -143,11 +146,21 @@ const UserComponent = () => {
   return (
     <>
       <Navbar />
-      <Box>
+      <Box
+        sx={{
+          width: "85%",
+          margin: "auto",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: "2%",
+        }}
+      >
+        <Typography variant="h6">Employee Data</Typography>{" "}
         <Button
           sx={{
-            marginBottom: "2%",
-            marginTop: "5%",
+            marginBottom: "1%",
+            marginTop: "15px",
           }}
           variant="contained"
           onClick={handleOpen}
@@ -176,7 +189,22 @@ const UserComponent = () => {
       </Box>
 
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>{editMode ? "Edit User" : "Add New User"}</DialogTitle>
+        <DialogTitle>
+          {editMode ? "Edit User" : "Add New User"}
+          <IconButton
+            aria-label="close"
+            onClick={() => setOpen(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+              marginTop: "5px",
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <form onSubmit={formik.handleSubmit}>
           <DialogContent>
             <TextField

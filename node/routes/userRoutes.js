@@ -17,7 +17,7 @@ router.post("/addUser", async (req, res) => {
         const { name, experience, address, role, dateOfJoining, id } = req.body;
         const newUser = new UserModel({ name, experience, address, role, dateOfJoining, id });
         await newUser.save();
-        res.status(201).json({ message: "User added successfully!" });
+        res.status(201).json({ message: "User added successfully" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Failed to add user" });
