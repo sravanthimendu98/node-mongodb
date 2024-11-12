@@ -20,6 +20,7 @@ import * as Yup from "yup";
 import Navbar from "../navbar/Navbar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import DeleteDialog from "../dialogs/DeleteUser";
 
 type User = {
   _id: number;
@@ -36,6 +37,8 @@ const UserComponent = () => {
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
   const fetchUsers = () => {
     UserService.usersData()
@@ -59,7 +62,6 @@ const UserComponent = () => {
       dateOfJoining: "",
       address: "",
     },
-
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
       experience: Yup.number().required("Experience is required"),
@@ -67,12 +69,10 @@ const UserComponent = () => {
       dateOfJoining: Yup.date().required("Date of Joining is required"),
       address: Yup.string().required("Address is required"),
     }),
-
     onSubmit: (values) => {
       console.log(values, "values");
 
       if (editMode && selectedUser) {
-        console.log(selectedUser._id, "selectedUser._id, ");
         UserService.editUser(selectedUser._id, values)
           .then(() => {
             fetchUsers();
@@ -108,13 +108,22 @@ const UserComponent = () => {
   };
 
   const handleDelete = (id: number) => {
-    UserService.deleteUser(id)
-      .then(() => {
-        fetchUsers();
-      })
-      .catch((error) => {
-        console.error("Failed to delete user");
-      });
+    setUserToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (userToDelete !== null) {
+      UserService.deleteUser(userToDelete)
+        .then(() => {
+          fetchUsers();
+        })
+        .catch((error) => {
+          console.error("Failed to delete user");
+        });
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
+    }
   };
 
   const isFormChanged = () => {
@@ -185,24 +194,22 @@ const UserComponent = () => {
           Add
         </Button>
       </Box>
-      <Box sx={{ height: 400, width: "85%", margin: "auto" }}>
-        <Box>
-          <DataGrid
-            sx={{
-              ".MuiDataGrid-row--borderBottom": {
-                backgroundColor: "#b4caf3 !important",
-              },
-            }}
-            getRowId={(row) => row._id}
-            rows={users}
-            columns={columns}
-            initialState={{
-              pagination: { paginationModel: { pageSize: 5 } },
-            }}
-            pageSizeOptions={[5]}
-            disableRowSelectionOnClick
-          />
-        </Box>
+      <Box sx={{ height: 500, width: "85%", margin: "auto" }}>
+        <DataGrid
+          sx={{
+            ".MuiDataGrid-row--borderBottom": {
+              backgroundColor: "#b4caf3 !important",
+            },
+          }}
+          getRowId={(row) => row._id}
+          rows={users}
+          columns={columns}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 10 } },
+          }}
+          pageSizeOptions={[10]}
+          disableRowSelectionOnClick
+        />
       </Box>
 
       <Dialog open={open} onClose={() => setOpen(false)}>
@@ -295,7 +302,6 @@ const UserComponent = () => {
                       formik.errors.dateOfJoining
                         ? formik.errors.dateOfJoining
                         : "",
-                    onBlur: () => formik.setFieldTouched("dateOfJoining", true),
                   },
                 }}
               />
@@ -317,19 +323,21 @@ const UserComponent = () => {
             <Button onClick={() => setOpen(false)}>Cancel</Button>
             <Button
               type="submit"
+              color="primary"
               variant="contained"
-              disabled={
-                !formik.isValid ||
-                !formik.dirty ||
-                formik.isSubmitting ||
-                (editMode && !isFormChanged())
-              }
+              disabled={!isFormChanged()}
             >
-              {editMode ? "Update" : "Add"}
+              {editMode ? "Update" : "Save"}
             </Button>
           </DialogActions>
         </form>
       </Dialog>
+
+      <DeleteDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 };
