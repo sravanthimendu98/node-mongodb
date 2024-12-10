@@ -19,7 +19,7 @@ const addUser = async (req, res) => {
         await newUser.save();
         res.status(201).json({ message: "User added successfully" });
     } catch (err) {
-        console.error(err); // Log the error for debugging
+        console.error(err); 
         res.status(500).json({ message: "Failed to add user" });
     }
 }

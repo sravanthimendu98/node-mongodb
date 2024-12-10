@@ -24,7 +24,6 @@
     </div>
 
     <script>
-
         const editUserData = JSON.parse(sessionStorage.getItem('editUserId'));
         const form = document.getElementById('addUserForm');
         
@@ -76,33 +75,6 @@
             }
         });
     </script>
-    
-    
 
-    <!-- <script>
-        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const experience = document.getElementById('experience').value;
-            const role = document.getElementById('role').value;
-            const dateOfJoining = document.getElementById('dateOfJoining').value;
-            const address = document.getElementById('address').value;
-            try {
-                const response = await axios.post('/addUser', {
-                    name,
-                    experience,
-                    role,
-                    dateOfJoining,
-                    address
-                });
-                alert(response.data.message);
-                window.location.href = '/getUsers'; 
-            } catch (error) {
-                console.error('Error adding user:', error);
-                alert('Failed to add user');
-            }
-        });
-    </script> -->
 </body>
 </html>

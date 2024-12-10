@@ -30,7 +30,7 @@
       "
       onclick="addUserPage()"
     >
-      Add
+      Add User
     </button>
     <table style="width: 100%; border-collapse: collapse">
       <thead>
@@ -66,7 +66,7 @@
               Edit
             </button>
             <button
-              onclick="deleteUser('<%= row._id %>')"
+              onclick="confirmDelete('<%= row._id %>')"
               style="
                 background-color: #d32f2f;
                 color: white;
@@ -83,7 +83,72 @@
       </tbody>
     </table>
 
+    <!-- Overlay for transparent background -->
+    <div
+      id="overlay"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      "
+    ></div>
+
+    <!-- Confirmation Dialog -->
+    <div
+      id="deleteDialog"
+      style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        z-index: 1000;
+      "
+    >
+      <div style="margin-bottom: 20px">
+        Are you sure you want to delete this user?
+      </div>
+      <div style="display: flex; justify-content: space-between">
+        <button
+          style="
+            background-color: #8c7272;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+          "
+          onclick="closeDialog()"
+        >
+          No
+        </button>
+        <button
+          style="
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+          "
+          onclick="deleteUser()"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+
     <script>
+      let deleteUserId = null;
+
       const addUserPage = async () => {
         window.location.href = "/addUsers";
       };
@@ -96,6 +161,30 @@
         } catch (err) {
           console.error("Error fetching user:", err);
         }
+      };
+
+      const confirmDelete = (id) => {
+        deleteUserId = id;
+        document.getElementById("deleteDialog").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+      };
+
+      const deleteUser = async () => {
+        if (deleteUserId) {
+          try {
+            await axios.delete(`/deleteUser/${deleteUserId}`);
+            window.location.reload();
+          } catch (err) {
+            console.error("Error deleting user:", err);
+          }
+        }
+        closeDialog();
+      };
+
+      const closeDialog = () => {
+        document.getElementById("deleteDialog").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+        deleteUserId = null;
       };
     </script>
   </body>
