@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node</title>
+    <!-- Material-UI CSS CDN -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mui/material@5.12.0/dist/material.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body style="font-family: 'Roboto', sans-serif;">
+    <!-- Add User Form -->
+    <div style="margin-bottom: 20px; margin-left: 20%; margin-right: 20%; margin-top: 5%;">
+        <h1 style="color: #1976d2;">Add New User</h1>
+        <form id="addUserForm" style="display: flex; flex-direction: column; gap: 10px;">
+            <input type="text" id="name" placeholder="Name" required style="padding: 8px;">
+            <input type="number" id="experience" placeholder="Experience" required style="padding: 8px;">
+            <input type="text" id="role" placeholder="Role" required style="padding: 8px;">
+            <input type="date" id="dateOfJoining" required style="padding: 8px;">
+            <input type="text" id="address" placeholder="Address" required style="padding: 8px;">
+            <button type="submit" style="padding: 10px; background-color: #1976d2; color: white; border: none; cursor: pointer;">Add User</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const experience = document.getElementById('experience').value;
+            const role = document.getElementById('role').value;
+            const dateOfJoining = document.getElementById('dateOfJoining').value;
+            const address = document.getElementById('address').value;
+            try {
+                const response = await axios.post('/addUser', {
+                    name,
+                    experience,
+                    role,
+                    dateOfJoining,
+                    address
+                });
+                alert(response.data.message);
+                window.location.href = '/getUsers'; 
+            } catch (error) {
+                console.error('Error adding user:', error);
+                alert('Failed to add user');
+            }
+        });
+    </script>
+</body>
+</html>

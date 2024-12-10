@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node</title>
+    <!-- Material-UI CSS CDN -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mui/material@5.12.0/dist/material.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body style="font-family: 'Roboto', sans-serif;">
+    <h1 style="color: #1976d2;">Dashboard</h1>  
+    <button onclick="addUserPage()">Add</button>  
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #1976d2; color: white; text-align: left;">
+                <th style="padding: 10px; text-align: left;">Name</th>
+                <th style="padding: 10px; text-align: left;">Experience</th>
+                <th style="padding: 10px; text-align: left;">Role</th>
+                <th style="padding: 10px; text-align: left;">Date Of Joining</th>
+                <th style="padding: 10px; text-align: left;">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(tableData) { %>
+                <% tableData.forEach(row => { %>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;"><%= row.name %></td>
+                        <td style="padding: 10px;"><%= row.experience %></td>
+                        <td style="padding: 10px;"><%= row.role %></td>
+                        <td style="padding: 10px;"><%= row.dateOfJoining %></td>
+                        <td style="padding: 10px;"><%= row.address %></td>
+                    </tr>
+                <% }) %>
+            <% } %>
+           
+        </tbody>
+    </table>
+
+
+    <script>
+       const addUserPage = () => {
+        window.location.href = '/addUsers'; 
+    };
+    </script>
+    
+</body>
+</html>
