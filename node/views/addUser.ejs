@@ -12,8 +12,8 @@
 <body style="font-family: 'Roboto', sans-serif;">
     <!-- Add User Form -->
     <div style="margin-bottom: 20px; margin-left: 20%; margin-right: 20%; margin-top: 5%;">
-        <h1 style="color: #1976d2;">Add New User</h1>
         <form id="addUserForm" style="display: flex; flex-direction: column; gap: 10px;">
+            <h1 style="color: #1976d2;">Add New User</h1>
             <input type="text" id="name" placeholder="Name" required style="padding: 8px;">
             <input type="number" id="experience" placeholder="Experience" required style="padding: 8px;">
             <input type="text" id="role" placeholder="Role" required style="padding: 8px;">
@@ -24,6 +24,62 @@
     </div>
 
     <script>
+
+        const editUserData = JSON.parse(sessionStorage.getItem('editUserId'));
+        const form = document.getElementById('addUserForm');
+        
+        if (editUserData) {
+            document.getElementById('name').value = editUserData.name;
+            document.getElementById('experience').value = editUserData.experience;
+            document.getElementById('role').value = editUserData.role;
+            document.getElementById('dateOfJoining').value = editUserData.dateOfJoining;
+            document.getElementById('address').value = editUserData.address;
+
+            form.querySelector('button[type="submit"]').textContent = 'Update User';
+            form.querySelector('h1').textContent = 'Update User';
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+        
+            const name = document.getElementById('name').value;
+            const experience = document.getElementById('experience').value;
+            const role = document.getElementById('role').value;
+            const dateOfJoining = document.getElementById('dateOfJoining').value;
+            const address = document.getElementById('address').value;
+        
+            try {
+                if (editUserData) {
+                    const response = await axios.put(`/editUser/${editUserData._id}`, {
+                        name,
+                        experience,
+                        role,
+                        dateOfJoining,
+                        address
+                    });
+                    alert(response.data.message);
+                    sessionStorage.removeItem('editUserId');
+                } else {
+                    const response = await axios.post('/addUser', {
+                        name,
+                        experience,
+                        role,
+                        dateOfJoining,
+                        address
+                    });
+                    alert(response.data.message);
+                }
+                window.location.href = '/getUsers';
+            } catch (error) {
+                console.error(editUserData ? 'Error updating user:' : 'Error adding user:', error);
+                alert(editUserData ? 'Failed to update user' : 'Failed to add user');
+            }
+        });
+    </script>
+    
+    
+
+    <!-- <script>
         document.getElementById('addUserForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -47,6 +103,6 @@
                 alert('Failed to add user');
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>
